@@ -1,5 +1,9 @@
-export class SignUpController {
-  async handle(httpRequest: any): Promise<any> {
-    return { statusCode: 400, body: new Error("Missing param: name") };
+import { Controller } from "../protocols/controller";
+import { HttpRequest, HttpResponse } from "../protocols/http";
+import { MissingParamError } from "../errors";
+
+export class SignUpController implements Controller {
+  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
+    return { statusCode: 400, body: new MissingParamError("name") };
   }
 }
