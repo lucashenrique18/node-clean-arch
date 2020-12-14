@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "sucrase-node src/main/server.ts",
+    "check": "npx npm-check -s -u",
+    "test": "jest --passWithNoTests --silent --noStackTrace --runInBand -—no-cache",
+    "test:verbose": "jest --passWithNoTests --runInBand",
+    "test:unit": "npm test -- --watch -c jest-unit-config.js",
+    "test:integration": "npm test -- --watch -c jest-integration-config.js",
+    "test:staged": "npm test -- --findRelatedTests",
+    "test:ci": "npm test -- --coverage"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +22,8 @@
     "@typescript-eslint/parser": "^4.10.0",
     "eslint": "^7.15.0",
     "git-commit-msg-linter": "^3.0.0",
+    "husky": "^4.3.6",
+    "lint-staged": "^10.5.3",
     "typescript": "^4.1.3"
   }
 }
