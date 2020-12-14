@@ -1,4 +1,5 @@
 import { SignUpController } from "./signup-controller";
+import { MissingParamError } from "../errors";
 
 interface SutTypes {
   sut: SignUpController;
@@ -23,6 +24,6 @@ describe("SignUp Controller", () => {
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new Error("Missing param: name"));
+    expect(httpResponse.body).toEqual(new MissingParamError("name"));
   });
 });
