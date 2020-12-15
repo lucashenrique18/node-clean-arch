@@ -4,6 +4,14 @@ import { MissingParamError } from "../errors";
 
 export class SignUpController implements Controller {
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
-    return { statusCode: 400, body: new MissingParamError("name") };
+    const requiredFields = ["name", "email", "password"];
+    for (const field of requiredFields) {
+      if (!httpRequest.body[field]) {
+        return {
+          statusCode: 400,
+          body: new MissingParamError(field),
+        };
+      }
+    }
   }
 }
