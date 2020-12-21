@@ -1,5 +1,5 @@
 import { SignUpController } from "./signup-controller";
-import { MissingParamError } from "../errors";
+import { MissingParamError } from "../../errors";
 
 interface SutTypes {
   sut: SignUpController;
