@@ -32,7 +32,7 @@ export class SignUpController implements Controller {
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
       }
-      this.addAccount.add({ email, name, password });
+      await this.addAccount.add({ email, name, password });
     } catch (error) {
       console.error(error);
       return serverError();
