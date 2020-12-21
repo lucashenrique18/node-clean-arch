@@ -1,7 +1,7 @@
 import { Controller } from "../../protocols/controller";
 import { HttpRequest, HttpResponse } from "../../protocols/http";
 import { InvalidParamError, MissingParamError } from "../../errors";
-import { badRequest, serverError } from "../../helpers/http-helper";
+import { badRequest, ok, serverError } from "../../helpers/http-helper";
 import { EmailValidator } from "../../protocols/email-validator";
 import { AddAccount } from "../../../domain/usecases/add-account/add-account";
 
@@ -32,7 +32,8 @@ export class SignUpController implements Controller {
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
       }
-      await this.addAccount.add({ email, name, password });
+      const account = await this.addAccount.add({ email, name, password });
+      return ok(account);
     } catch (error) {
       console.error(error);
       return serverError();
