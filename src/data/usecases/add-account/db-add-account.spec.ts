@@ -1,9 +1,13 @@
+import { AccountModel } from "../../../domain/models/account-model";
+import { AddAccountModel } from "../../../domain/usecases/add-account/add-account";
 import { Hasher } from "../../protocols/criptography/hasher";
+import { AddAccountRepository } from "../../protocols/db/account/add-account-repository";
 import { DbAddAccount } from "./db-add-account";
 
 interface SutTypes {
   sut: DbAddAccount;
   hasherStub: Hasher;
+  addAccountRepositoryStub: AddAccountRepository;
 }
 
 const makeHasher = (): Hasher => {
@@ -15,12 +19,29 @@ const makeHasher = (): Hasher => {
   return new HasherStub();
 };
 
+const makeAddAccountRepository = (): AddAccountRepository => {
+  class AddAccountRepositoryStub implements AddAccountRepository {
+    async add(accountData: AddAccountModel): Promise<AccountModel> {
+      const fakeAccount = {
+        id: "valid_id",
+        name: "valid_name",
+        email: "valid_email@mail.com",
+        password: "hashed_password",
+      };
+      return new Promise((resolve) => resolve(fakeAccount));
+    }
+  }
+  return new AddAccountRepositoryStub();
+};
+
 const makeSut = (): SutTypes => {
   const hasherStub = makeHasher();
-  const sut = new DbAddAccount(hasherStub);
+  const addAccountRepositoryStub = makeAddAccountRepository();
+  const sut = new DbAddAccount(hasherStub, addAccountRepositoryStub);
   return {
     sut,
     hasherStub,
+    addAccountRepositoryStub,
   };
 };
 
@@ -51,5 +72,21 @@ describe("DbAddAccount Usecase", () => {
     };
     const promise = sut.add(accountData);
     await expect(promise).rejects.toThrow();
+  });
+
+  test("Should call AddAccountRepository add with correct values", async () => {
+    const { sut, addAccountRepositoryStub } = makeSut();
+    const addSpy = jest.spyOn(addAccountRepositoryStub, "add");
+    const accountData = {
+      name: "valid_name",
+      email: "valid_email@mail.com",
+      password: "valid_password",
+    };
+    await sut.add(accountData);
+    expect(addSpy).toHaveBeenCalledWith({
+      name: "valid_name",
+      email: "valid_email@mail.com",
+      password: "hashed_password",
+    });
   });
 });
