@@ -5,10 +5,10 @@ export class LogControllerDecorator implements Controller {
   constructor(private readonly controller: Controller) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
-    const HttpResponse = await this.controller.handle(httpRequest);
-    if (HttpResponse.statusCode === 500) {
+    const httpResponse = await this.controller.handle(httpRequest);
+    if (httpResponse.statusCode === 500) {
       //log
     }
-    return HttpResponse;
+    return httpResponse;
   }
 }
