@@ -84,6 +84,6 @@ describe("LogController Decorator", () => {
       .mockReturnValueOnce(new Promise((resolve) => resolve(error)));
     const httpRequest = makeFakeRequest();
     await sut.handle(httpRequest);
-    expect(logSpy).toHaveBeenCalledWith("any_stack");
+    expect(logSpy).toHaveBeenCalledWith(fakeError.stack);
   });
 });
