@@ -1,4 +1,3 @@
-import { resolve } from "path";
 import { AddAccountRepository } from "../../../../data/protocols/db/account/add-account-repository";
 import { AccountModel } from "../../../../domain/models/account-model";
 import { AddAccountModel } from "../../../../domain/usecases/add-account/add-account";
