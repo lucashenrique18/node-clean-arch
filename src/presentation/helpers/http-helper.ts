@@ -12,9 +12,9 @@ export const serverError = (error: Error): HttpResponse => ({
   body: new ServerError(error.stack),
 });
 
-export const unauthorized = (error: Error): HttpResponse => ({
+export const unauthorized = (): HttpResponse => ({
   statusCode: 401,
-  body: error,
+  body: new UnauthorizedError(),
 });
 
 export const ok = (data: any): HttpResponse => ({
