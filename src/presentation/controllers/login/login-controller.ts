@@ -30,7 +30,7 @@ export class LoginController implements Controller {
       }
       const isAuth = await this.authentication.auth(email, password);
       if (!isAuth) {
-        return unauthorized(new UnauthorizedError());
+        return unauthorized();
       }
     } catch (error) {
       console.error(error);
