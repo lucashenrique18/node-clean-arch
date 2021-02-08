@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import { Authentication } from "../../../domain/authentication/authentication";
 import {
   InvalidParamError,
@@ -5,7 +6,7 @@ import {
   ServerError,
 } from "../../errors";
 import { UnauthorizedError } from "../../errors/unauthorized-error";
-import { badRequest, serverError } from "../../helpers/http-helper";
+import { badRequest, ok, serverError } from "../../helpers/http-helper";
 import { EmailValidator } from "../../protocols/email-validator";
 import { HttpRequest } from "../../protocols/http";
 import { LoginController } from "./login-controller";
@@ -28,8 +29,8 @@ const makeEmailValidator = (): EmailValidator => {
 
 const makeAuthentication = (): Authentication => {
   class AuthenticationStub implements Authentication {
-    async auth(email: string, password: string): Promise<boolean> {
-      return true;
+    async auth(email: string, password: string): Promise<string> {
+      return new Promise((resolve) => resolve("any_token"));
     }
   }
   return new AuthenticationStub();
@@ -104,6 +105,16 @@ describe("Login Controller", () => {
     await sut.handle(httpRequest);
     expect(authSpy).toHaveBeenCalledWith("any_email@mail.com", "any_password");
   });
+  test("Should return 401 if invalid credentials are provided", async () => {
+    const { sut, authenticationStub } = makeSut();
+    jest
+      .spyOn(authenticationStub, "auth")
+      .mockReturnValueOnce(new Promise((resolve) => resolve(null)));
+    const httpRequest = makeFakeRequest();
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(401);
+    expect(httpResponse.body).toEqual(new UnauthorizedError());
+  });
   test("Should return 500 if Authentication throws", async () => {
     const { sut, authenticationStub } = makeSut();
     jest.spyOn(authenticationStub, "auth").mockImplementationOnce(async () => {
@@ -114,14 +125,10 @@ describe("Login Controller", () => {
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse).toEqual(serverError(new ServerError(null)));
   });
-  test("Should return 401 if invalid credentials are provided", async () => {
-    const { sut, authenticationStub } = makeSut();
-    jest
-      .spyOn(authenticationStub, "auth")
-      .mockReturnValueOnce(new Promise((resolve) => resolve(false)));
+  test("Should return 200 if valid data is provided", async () => {
+    const { sut } = makeSut();
     const httpRequest = makeFakeRequest();
     const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(401);
-    expect(httpResponse.body).toEqual(new UnauthorizedError());
+    expect(httpResponse).toEqual(ok("any_token"));
   });
 });
